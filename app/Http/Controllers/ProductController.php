@@ -1,20 +1,24 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
-class Controller extends Controller
+
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index() : View
     {
-        return view('index', [
+        $products = Product::all();
+        return view('products.index', compact('products'), [
             'products' => Product::latest()->paginate(3)
         ]);
     }
@@ -42,6 +46,7 @@ class Controller extends Controller
      */
     public function show(Product $product) : View
     {
+        $products = Product::find($product->id);
         return view('products.show', [
             'product' => $products
         ]);
@@ -70,7 +75,7 @@ class Controller extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product) : RedirectResponse
+    public function destroy(Product $product) : RedirectResponse
     {
         $product->delete();
         return redirect()->route('index')
